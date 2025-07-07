@@ -1,1 +1,1 @@
-# Moive Rating Web App
+# Movie Rating Web App
