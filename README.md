@@ -30,6 +30,10 @@ A PHP and MySQL-based full-stack web application developed as a course project f
 - Implemented role-based access and basic user session handling.
 - Explored CRUD operations and form validation in PHP.
 
+## ER Diagram
+
+![ER_diagram](https://github.com/user-attachments/assets/f5702455-65b7-4aac-be21-4f947a3bfae3)
+
 ## Sample Screens
 
 ### Main Menu
