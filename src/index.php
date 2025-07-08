@@ -49,7 +49,7 @@ if (isset($_GET["title"])) {
   if ($genre != '-1') {
     $search_where_clause .= " AND g.genre_id = $genre ";
   }
-  
+
   # set search movies
   $search_movies_sql = "SELECT
                           m.title, 
@@ -90,169 +90,175 @@ if (isset($_GET["title"])) {
 
 <!DOCTYPE html>
 <html>
-<head><title>Rotten Cucumbers</title></head>
+
+<head>
+  <title>Rotten Cucumbers</title>
+</head>
 
 <style>
-table, td, th {  
-  border: 1px solid #ddd;
-  text-align: center;
-}
+  table,
+  td,
+  th {
+    border: 1px solid #ddd;
+    text-align: center;
+  }
 
-table {
-  border-collapse: collapse;
-  width: 90%;
-}
+  table {
+    border-collapse: collapse;
+    width: 90%;
+  }
 
-th, td {
-  padding: 10px;
-}
+  th,
+  td {
+    padding: 10px;
+  }
 </style>
 
 <body>
-<hr>
-<div style="display: grid; grid-template-columns: auto auto; align-items: center;">
-  <div>
-  <?
-    if (isset($_SESSION["userid"])) { ?>
-      <a href="securityCheck.php?log_out=yes">Sign out</a>
+  <hr>
+  <div style="display: grid; grid-template-columns: auto auto; align-items: center;">
+    <div>
+      <?
+      if (isset($_SESSION["userid"])) { ?>
+        <a href="securityCheck.php?log_out=yes">Sign out</a>
 
-      <?
-      if ($_SESSION["is_approved"] == -1) { ?>
-        &nbsp;&nbsp;
-        <a href="popcornDash.php">Popcorn Home Page</a>
-        &nbsp;&nbsp;
-        <a href="rottenDash.php">Rotten Home Page</a>
-        &nbsp;&nbsp;
-        <a href="adminDash.php">Main Admin Page</a>
-      <?
-      } else if ($_SESSION["is_approved"] == 1) { ?>
-        &nbsp;&nbsp;
-        <a href="rottenDash.php">Rotten Home Page</a>
-      <?
+        <?
+        if ($_SESSION["is_approved"] == -1) { ?>
+          &nbsp;&nbsp;
+          <a href="popcornDash.php">Popcorn Home Page</a>
+          &nbsp;&nbsp;
+          <a href="rottenDash.php">Rotten Home Page</a>
+          &nbsp;&nbsp;
+          <a href="adminDash.php">Main Admin Page</a>
+          <?
+        } else if ($_SESSION["is_approved"] == 1) { ?>
+            &nbsp;&nbsp;
+            <a href="rottenDash.php">Rotten Home Page</a>
+          <?
+        } else { ?>
+            &nbsp;&nbsp;
+            <a href="popcornDash.php">Popcorn Home Page</a>
+          <?
+        } ?>
+        <?
       } else { ?>
-        &nbsp;&nbsp;
-        <a href="popcornDash.php">Popcorn Home Page</a>
-      <?
+        <a href="signin.php">Sign in</a>
+        <?
       } ?>
-    <?
-    } else { ?>
-      <a href="signin.php">Sign in</a>
-    <?
-    } ?>
+    </div>
+    <div style="text-align: right;">
+      <?
+      if (isset($_SESSION["userid"])) { ?>
+        <?= $_SESSION["fullname"] ?> is Signed In.
+        <?
+      } ?>
+    </div>
   </div>
-  <div style="text-align: right;">
-    <?
-    if (isset($_SESSION["userid"])) { ?>
-      <?=$_SESSION["fullname"]?> is Signed In.
-    <?
-    } ?>
-  </div>
-</div>
-<hr>
+  <hr>
 
-<h1>Welcome to the Rotten Cucumbers</h1><br>
+  <h1>Welcome to the Rotten Cucumbers</h1><br>
   <h2>Introduction to a few Movies:</h2>
-    <?
-    $total_rows = $random_movies_result->num_rows;
-    if ($total_rows > 0) {
+  <?
+  $total_rows = $random_movies_result->num_rows;
+  if ($total_rows > 0) {
     ?>
-      <table>
+    <table>
+      <tr>
+        <th>Title</th>
+        <th>Average Popcorn Rate</th>
+        <th>Average Rotten Rate</th>
+        <th>Comment</th>
+      </tr>
+      <?
+      while ($movie_row = $random_movies_result->fetch_assoc()) {
+        ?>
         <tr>
-          <th>Title</th>
-          <th>Average Popcorn Rate</th>
-          <th>Average Rotten Rate</th>
-          <th>Comment</th>
+          <td><? echo $movie_row["title"] ?></td>
+          <td><? echo $movie_row["avg_popcorn_rating"] ?></td>
+          <td><? echo $movie_row["avg_rotten_rating"] ?></td>
+          <td><? echo $movie_row["rotten_comment"] ?></td>
         </tr>
         <?
-        while ($movie_row = $random_movies_result->fetch_assoc()) {
-        ?>
-          <tr>
-            <td><?echo $movie_row["title"]?></td>
-            <td><?echo $movie_row["avg_popcorn_rating"]?></td>
-            <td><?echo $movie_row["avg_rotten_rating"]?></td>
-            <td><?echo $movie_row["rotten_comment"]?></td>
-          </tr>
-        <?
-        }
-        ?>
-      </table>
+      }
+      ?>
+    </table>
     <?
-    }
-    else {
-        echo "<br><br>No movies found for Rutten Cucumbers.<br><br>";
-    }
-    ?>
-    <br><br>
+  } else {
+    echo "<br><br>No movies found for Rutten Cucumbers.<br><br>";
+  }
+  ?>
+  <br><br>
 
   <h2>Search Movies:</h2>
-    <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="GET">
-      Title: <input type="text" name="title"  value="<?= $title ?>">
-      <br><br>
-      Genre:
-      <select name="genre" id="genre">
-        <option value="-1">Choose Genre</option>
-        <?
-        $genre_sql = "SELECT * FROM genre ORDER BY gen_name ASC";
-        $genre_result = db_query($genre_sql);
-        if (isset($_GET['clear'])) {
-          $selected_genre = '-1';
-        } else {
-          $selected_genre = $_GET['genre'] ?? '-1';
-        }
-        while ($genre_row = $genre_result->fetch_assoc()) {
-            $is_selected = ($genre_row["genre_id"] == $selected_genre) ? 'selected' : '';
+  <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="GET">
+    Title: <input type="text" name="title" value="<?= $title ?>">
+    <br><br>
+    Genre:
+    <select name="genre" id="genre">
+      <option value="-1">Choose Genre</option>
+      <?
+      $genre_sql = "SELECT * FROM genre ORDER BY gen_name ASC";
+      $genre_result = db_query($genre_sql);
+      if (isset($_GET['clear'])) {
+        $selected_genre = '-1';
+      } else {
+        $selected_genre = $_GET['genre'] ?? '-1';
+      }
+      while ($genre_row = $genre_result->fetch_assoc()) {
+        $is_selected = ($genre_row["genre_id"] == $selected_genre) ? 'selected' : '';
         ?>
-          <option value="<?php echo $genre_row["genre_id"]; ?>" <?php echo $is_selected; ?>>
-              <? echo $genre_row["gen_name"]; ?>
-          </option>
+        <option value="<?php echo $genre_row["genre_id"]; ?>" <?php echo $is_selected; ?>>
+          <? echo $genre_row["gen_name"]; ?>
+        </option>
         <?
-        }
-        ?>
-      </select>
-      <br><br>
-      <input type="submit" value="Search">
-      &nbsp;&nbsp;
-      <input type="reset" value="Clear" onclick="location.href='<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>?clear=1'">
-    </form>
+      }
+      ?>
+    </select>
+    <br><br>
+    <input type="submit" value="Search">
+    &nbsp;&nbsp;
+    <input type="reset" value="Clear" onclick="location.href='<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>?clear=1'">
+  </form>
 
-    <? 
-    if (isset($message)) { ?>
+  <?
+  if (isset($message)) { ?>
     <h3><?= $message ?></h3>
-    <? } 
-    ?>
+  <? }
+  ?>
 
-  <? 
-  if (isset($search_result) && ($title != '' || $genre !='-1')) { ?>
+  <?
+  if (isset($search_result) && ($title != '' || $genre != '-1')) { ?>
     <h2>Search Results</h2>
-      <table>
-        <tr>
-          <th>Title</th>
-          <th>Genre</th>
-          <th>Release Year</th>
-          <th>Director</th>
-          <th>Actor</th>
-          <th>Average Popcorn Rate</th>
-          <th>Average Rotten Rate</th>
-          <th>Comment</th>
-        </tr>
+    <table>
+      <tr>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Release Year</th>
+        <th>Director</th>
+        <th>Actor</th>
+        <th>Average Popcorn Rate</th>
+        <th>Average Rotten Rate</th>
+        <th>Comment</th>
+      </tr>
 
-        <? 
-        while ($search_row = $search_result->fetch_assoc()) { ?>
-          <tr>
-            <td><?echo $search_row["title"]?></td>
-            <td><?echo $search_row["genres"]?></td>
-            <td><?echo $search_row["release_year"]?></td>
-            <td><?echo $search_row["directors"]?></td>
-            <td><?echo $search_row["actors"]?></td>
-            <td><?echo $search_row["avg_popcorn_rating"]?></td>
-            <td><?echo $search_row["avg_rotten_rating"]?></td>
-            <td><?echo $search_row["rotten_comment"]?></td>
-          </tr>
-        <? 
-        } ?>
-      </table>
-  <? 
+      <?
+      while ($search_row = $search_result->fetch_assoc()) { ?>
+        <tr>
+          <td><? echo $search_row["title"] ?></td>
+          <td><? echo $search_row["genres"] ?></td>
+          <td><? echo $search_row["release_year"] ?></td>
+          <td><? echo $search_row["directors"] ?></td>
+          <td><? echo $search_row["actors"] ?></td>
+          <td><? echo $search_row["avg_popcorn_rating"] ?></td>
+          <td><? echo $search_row["avg_rotten_rating"] ?></td>
+          <td><? echo $search_row["rotten_comment"] ?></td>
+        </tr>
+      <?
+      } ?>
+    </table>
+  <?
   } ?>
-  
+
 </body>
+
 </html>

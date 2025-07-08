@@ -51,12 +51,12 @@ INSERT INTO `movie_genre` (`movie_id`, `genre_id`)
           (3, 3);
 
 /*  Insert data for preview */
-INSERT INTO `preview` (`preview_id`, `theater`, `date`, `time`, `movie_id`) 
-  VALUES  (1, 'Big Cinema', '2024-12-01', '18:00:00', 1),
-          (2, 'Cool Theater', '2024-12-02', '20:30:00', 2),
-          (3, 'AMC', '2024-12-03', '19:00:00', 3),
-          (4, 'XYZ', '2024-12-25', '17:15:00', 2),
-          (5, 'gurnee', '2024-12-27', '03:05:00', 3);
+INSERT INTO `preview` (`theater`, `date`, `time`, `movie_id`) 
+  VALUES  ('Big Cinema', '2024-12-01', '18:00:00', 1),
+          ('Cool Theater', '2024-12-02', '20:30:00', 2),
+          ('AMC', '2024-12-03', '19:00:00', 3),
+          ('XYZ', '2024-12-25', '17:15:00', 2),
+          ('gurnee', '2024-12-27', '03:05:00', 3);
 
 /*  Insert data for review */
 INSERT INTO `review` (`review_id`, `rating`, `mbr_username`, `review_comment`, 

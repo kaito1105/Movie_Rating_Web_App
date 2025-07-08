@@ -10,7 +10,8 @@ $username = $_SESSION['userid'];
 $movies_result = $db_conn->query("SELECT movie_id, title FROM movie");
 
 // Fetch reviews entered by the Popcorn Reviewer
-function fetch_popcorn_review() {
+function fetch_popcorn_review()
+{
     $username = $_SESSION['userid'];
     $reviews_result = db_query("SELECT r.review_id, m.title, r.rating, r.review_comment
                                    FROM review r
@@ -56,83 +57,109 @@ if (isset($_POST['submittion'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popcorn Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { margin-bottom: 40px; }
-        textarea { width: 100%; height: 80px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            margin-bottom: 40px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
     </style>
 </head>
 
 <body>
 
-<hr>
-<div style="display: grid; grid-template-columns: auto auto; align-items: center;">
-    <div>
-        <a href="index.php">Home</a>
-        &nbsp;&nbsp;
-        <a href="securityCheck.php?log_out=yes">Sign out</a>
-        
-        <? 
-        if ($_SESSION["is_approved"] == -1) { ?>
+    <hr>
+    <div style="display: grid; grid-template-columns: auto auto; align-items: center;">
+        <div>
+            <a href="index.php">Home</a>
             &nbsp;&nbsp;
-            <a href="rottenDash.php">Rotten Home Page</a>
-            &nbsp;&nbsp;
-            <a href="adminDash.php">Main Admin Page</a>
-        <?
-        } ?>
+            <a href="securityCheck.php?log_out=yes">Sign out</a>
 
+            <?
+            if ($_SESSION["is_approved"] == -1) { ?>
+                &nbsp;&nbsp;
+                <a href="rottenDash.php">Rotten Home Page</a>
+                &nbsp;&nbsp;
+                <a href="adminDash.php">Main Admin Page</a>
+                <?
+            } ?>
+
+        </div>
+        <div style="text-align: right;">
+            <?= $_SESSION["fullname"] ?> is Signed In.
+        </div>
     </div>
-    <div style="text-align: right;">
-        <?=$_SESSION["fullname"]?> is Signed In.
-    </div>
-</div>
-<hr>
+    <hr>
 
     <h1>Popcorn Dashboard - Rotten Cucumbers</h1>
 
     <? if (isset($error_message)) { ?>
         <h2><?= $error_message ?></h2>
     <? } else { ?>
-        <h2>Add a Popcorn Review</h2>    
+        <h2>Add a Popcorn Review</h2>
     <? } ?>
-    
-   <form action="popcornDash.php" method="POST">
-    <label for="movie">Select Movie:</label>
-    <select name="movie" id="movie" required>
-        <option value="-1">Choose Movie</option>
-        <?php while ($movie = $movies_result->fetch_assoc()): ?>
-            <option value="<?= $movie['movie_id'] ?>"><?= htmlspecialchars($movie['title']) ?></option>
-        <?php endwhile; ?>
-    </select>
-    <br><br>
 
-    <label for="rating">Rating (1-10):</label>
-    <input type="range" name="rating" id="rating" min="1" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
-    <output>5</output>
-    <br><br>
+    <form action="popcornDash.php" method="POST">
+        <label for="movie">Select Movie:</label>
+        <select name="movie" id="movie" required>
+            <option value="-1">Choose Movie</option>
+            <?php while ($movie = $movies_result->fetch_assoc()): ?>
+                <option value="<?= $movie['movie_id'] ?>"><?= htmlspecialchars($movie['title']) ?></option>
+            <?php endwhile; ?>
+        </select>
+        <br><br>
 
-    <label for="comment">Comment (optional):</label>
-    <textarea name="comment" id="comment" placeholder="Enter your thoughts..."></textarea>
-    <br><br>
+        <label for="rating">Rating (1-10):</label>
+        <input type="range" name="rating" id="rating" min="1" max="10" value="5"
+            oninput="this.nextElementSibling.value = this.value">
+        <output>5</output>
+        <br><br>
 
-    <button type="submit" name="submittion">Submit Review</button>
-</form>
-    
-<? if (isset($message)) { ?>
-    <h2><?= $message ?></h2><br>
-<? } ?>
+        <label for="comment">Comment (optional):</label>
+        <textarea name="comment" id="comment" placeholder="Enter your thoughts..."></textarea>
+        <br><br>
+
+        <button type="submit" name="submittion">Submit Review</button>
+    </form>
+
+    <? if (isset($message)) { ?>
+        <h2><?= $message ?></h2><br>
+    <? } ?>
 
     <h2>Your Reviews:</h2>
-    <?php 
-        $reviews_result = fetch_popcorn_review();
-        if ($reviews_result->num_rows > 0): ?>
+    <?php
+    $reviews_result = fetch_popcorn_review();
+    if ($reviews_result->num_rows > 0): ?>
         <table>
             <thead>
                 <tr>
@@ -155,6 +182,7 @@ if (isset($_POST['submittion'])) {
         <p>No reviews found.</p>
     <?php endif; ?>
 </body>
+
 </html>
 
 <?php

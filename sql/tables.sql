@@ -61,15 +61,13 @@ CREATE TABLE `movie_genre` (
 
 /*  Create table for preview */
 CREATE TABLE `preview` (
-  `preview_id` INT NOT NULL AUTO_INCREMENT,
   `theater` VARCHAR(100) DEFAULT NULL,
   `date` DATE DEFAULT NULL,
   `time` TIME DEFAULT NULL,
   `movie_id` INT NOT NULL,
-  PRIMARY KEY (`preview_id`),
+  PRIMARY KEY (`theater`, `date`, `time`, `movie_id`),
   FOREIGN KEY (`movie_id`) REFERENCES `movie` (`movie_id`)
 );
-ALTER TABLE `preview` AUTO_INCREMENT=6;
 
 /*  Create table for review */
 CREATE TABLE `review` (
